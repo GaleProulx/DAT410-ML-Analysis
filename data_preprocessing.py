@@ -188,7 +188,7 @@ def string_to_unique_list(column: pd.Series) -> pd.DataFrame:
         for grade in grades:
             if (grade not in unique_grade) and (grade != 'nan'):
                 unique_grade.append(grade)
-                
+
     unique_grade.sort()
 
     return unique_grade
@@ -198,15 +198,15 @@ def string_to_dummy_dataframe(df: pd.DataFrame, column: str,
                               uni_list: list) -> pd.DataFrame:
     zeroed_data = np.zeros((df.shape[1], len(uni_list)))
     dum_grade = pd.DataFrame(zeroed_data, columns=uni_list)
-    
+
     for index, row in df.iterrows():
         school_grades = str(row[column]).split(',')
         for grade in school_grades:
             if grade != 'nan':
                 dum_grade.loc[index, grade] = 1
-    
+
     return dum_grade
-    
+
 
 def viz_histogram(df: pd.DataFrame, n_bins=30, separate_graphs=True,
                   title='', transparency=0.5):
@@ -271,59 +271,62 @@ def main() -> None:
     # [INITIAL STEP] Load data and only keep columns we want to analyze.
     df = load_dataset('MA_Public_Schools_2017.csv')
     keep_cols = [
-        'Town', 'Grade', 'PK_Enrollment', 'K_Enrollment', 
-        '1_Enrollment', '2_Enrollment', '3_Enrollment', 
-        '4_Enrollment', '5_Enrollment', '6_Enrollment', 
-        '7_Enrollment', '8_Enrollment', '9_Enrollment', 
-        '10_Enrollment', '11_Enrollment', '12_Enrollment', 
-        'SP_Enrollment', 'TOTAL_Enrollment', 
+        'Town', 'Grade', 'PK_Enrollment', 'K_Enrollment',
+        '1_Enrollment', '2_Enrollment', '3_Enrollment',
+        '4_Enrollment', '5_Enrollment', '6_Enrollment',
+        '7_Enrollment', '8_Enrollment', '9_Enrollment',
+        '10_Enrollment', '11_Enrollment', '12_Enrollment',
+        'SP_Enrollment', 'TOTAL_Enrollment',
         'First Language Not English', '% First Language Not English',
-        'English Language Learner', '% English Language Learner', 
-        'Students With Disabilities', '% Students With Disabilities', 
-        'High Needs', '% High Needs', 'Economically Disadvantaged', 
-        '% Economically Disadvantaged', '% African American', 
-        '% Asian', '% Hispanic', '% White', '% Native American', 
-        '% Native Hawaiian, Pacific Islander', '% Multi-Race, Non-Hispanic', 
-        '% Males', '% Females', 'Total # of Classes', 
-        'Average Class Size' ,'Number of Students', 'Salary Totals', 
-        'Average Salary', 'FTE Count', 'In-District Expenditures', 
-        'Total In-district FTEs', 
-        'Average In-District Expenditures per Pupil', 
-        'Total Expenditures', 'Total Pupil FTEs', 
-        'Average Expenditures per Pupil', '# in Cohort', 
-        '% Graduated', '% Still in School', '% Non-Grad Completers', 
-        '% GED', '% Dropped Out', '% Permanently Excluded', 
-        'High School Graduates (#)', 'Attending Coll./Univ. (#)', 
-        '% Attending College', '% Private Two-Year', 
-        '% Private Four-Year', '% Public Two-Year', 
-        '% Public Four-Year', '% MA Community College', 
-        '% MA State University', '% UMass', 
-        'Accountability and Assistance Level', 
-        'Accountability and Assistance Description', 
-        'School Accountability Percentile (1-99)', 
-        'Progress and Performance Index (PPI) - All Students', 
+        'English Language Learner', '% English Language Learner',
+        'Students With Disabilities', '% Students With Disabilities',
+        'High Needs', '% High Needs', 'Economically Disadvantaged',
+        '% Economically Disadvantaged', '% African American',
+        '% Asian', '% Hispanic', '% White', '% Native American',
+        '% Native Hawaiian, Pacific Islander', '% Multi-Race, Non-Hispanic',
+        '% Males', '% Females', 'Total # of Classes',
+        'Average Class Size', 'Number of Students', 'Salary Totals',
+        'Average Salary', 'FTE Count', 'In-District Expenditures',
+        'Total In-district FTEs',
+        'Average In-District Expenditures per Pupil',
+        'Total Expenditures', 'Total Pupil FTEs',
+        'Average Expenditures per Pupil', '# in Cohort',
+        '% Graduated', '% Still in School', '% Non-Grad Completers',
+        '% GED', '% Dropped Out', '% Permanently Excluded',
+        'High School Graduates (#)', 'Attending Coll./Univ. (#)',
+        '% Attending College', '% Private Two-Year',
+        '% Private Four-Year', '% Public Two-Year',
+        '% Public Four-Year', '% MA Community College',
+        '% MA State University', '% UMass',
+        'Accountability and Assistance Level',
+        'Accountability and Assistance Description',
+        'School Accountability Percentile (1-99)',
+        'Progress and Performance Index (PPI) - All Students',
         'Progress and Performance Index (PPI) - High Needs Students',
-        'District_Accountability and Assistance Level', 
-        'District_Accountability and Assistance Description', 
+        'District_Accountability and Assistance Level',
+        'District_Accountability and Assistance Description',
     ]
     df = df[keep_cols]
-    
+
     # [TRANSFORMATIVE STEP] Clean grade column to make values uniform.
     df['Grade'].replace('4', '04', inplace=True)
     df['Grade'].replace('6', '06', inplace=True)
-    
+
     # [TRANSFORMATIVE STEP] Create dummy columns for grade column.
     grades = string_to_unique_list(df['Grade'])
-    dum_grades = string_to_dummy_dataframe(df, 'Grade' , grades)
+    dum_grades = string_to_dummy_dataframe(df, 'Grade', grades)
     df = df.join(dum_grades)
     df.drop(columns='Grade', inplace=True)
-    
+
     # [TRANSFORMATIVE STEP] Create dummy columns for columns that need it.
-    dummy_cols = ['Accountability and Assistance Level', 
+    dummy_cols = ['Accountability and Assistance Level',
                   'District_Accountability and Assistance Level']
-    df = dummy_transformation(df, dummy_cols, left_suffix='_School', 
+    df = dummy_transformation(df, dummy_cols, left_suffix='_School',
                               right_suffix='_District')
     print(df.head())
+    print(df.columns)
+    print(df.shape)
+
 
 if __name__ == "__main__":
     main()
