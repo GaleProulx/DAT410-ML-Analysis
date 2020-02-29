@@ -271,7 +271,7 @@ def main() -> None:
     # [INITIAL STEP] Load data and only keep columns we want to analyze.
     df = load_dataset('MA_Public_Schools_2017.csv')
     keep_cols = [
-        'Town', 'Grade', 'PK_Enrollment', 'K_Enrollment',
+        'Grade', 'PK_Enrollment', 'K_Enrollment',
         '1_Enrollment', '2_Enrollment', '3_Enrollment',
         '4_Enrollment', '5_Enrollment', '6_Enrollment',
         '7_Enrollment', '8_Enrollment', '9_Enrollment',
@@ -299,12 +299,10 @@ def main() -> None:
         '% Public Four-Year', '% MA Community College',
         '% MA State University', '% UMass',
         'Accountability and Assistance Level',
-        'Accountability and Assistance Description',
         'School Accountability Percentile (1-99)',
         'Progress and Performance Index (PPI) - All Students',
         'Progress and Performance Index (PPI) - High Needs Students',
-        'District_Accountability and Assistance Level',
-        'District_Accountability and Assistance Description',
+        'District_Accountability and Assistance Level'
     ]
     df = df[keep_cols]
 
@@ -323,6 +321,12 @@ def main() -> None:
                   'District_Accountability and Assistance Level']
     df = dummy_transformation(df, dummy_cols, left_suffix='_School',
                               right_suffix='_District')
+    
+    df = standardize_data(df)
+    
+    df.to_csv('standardized_data.csv', index=False)
+    
+    
     print(df.head())
     print(df.columns)
     print(df.shape)
