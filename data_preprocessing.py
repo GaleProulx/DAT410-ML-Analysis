@@ -322,9 +322,9 @@ def main() -> None:
     df = dummy_transformation(df, dummy_cols, left_suffix='_School',
                               right_suffix='_District')
     
-    df = standardize_data(df)
+    # df = standardize_data(df)
     
-    df.to_csv('standardized_data.csv', index=False)
+    df.to_csv('cleaned_data.csv', index=False)
     
     
     print(df.head())
