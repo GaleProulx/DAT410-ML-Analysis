@@ -11,6 +11,7 @@
 # copy of this assignment on its database for the purpose of future
 # plagiarism checking).
 #
+# ALL CODE IN THIS FILE WAS CREATED BY GALE
 
 # IMPORT DEPENDENCIES & SET CONFIGURATION
 # ############################################################################

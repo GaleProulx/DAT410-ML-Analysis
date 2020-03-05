@@ -1,4 +1,4 @@
-# Author: Gale Proulx
+# Author: Gale Proulx & Finn Jensen
 # Class:  DAT-310-01
 # Certification of Authenticity:
 # I certify that this is my work and the DAT-330 class work,
@@ -20,6 +20,7 @@ import pandas as pd
 
 # FUNCTIONS
 # ############################################################################
+# Function created by Gale Proulx
 def import_train_test(filename: str, feature: str, train_size=0.33):
     df = pd.read_csv(filename)
     target = df[feature]
@@ -33,10 +34,12 @@ def import_train_test(filename: str, feature: str, train_size=0.33):
 # MAIN
 # ############################################################################
 def main() -> None:
+    # Train-test-split created by Gale Proulx
     X_train, X_test, y_train, y_test = \
         import_train_test('standardized_data.csv', 
                           'Average Expenditures per Pupil', train_size=0.50)
-    
+
+    # The rest of main created by Finn Jensen
     print("Finn's Code Here...")
 
 if __name__ == "__main__":
