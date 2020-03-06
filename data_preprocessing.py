@@ -30,7 +30,7 @@ import seaborn as sn
 
 
 pd.set_option('display.max_columns', None)
-pd.set_option('display.max_rows', 100)
+pd.set_option('display.max_rows', None)
 pd.set_option('display.width', 100)
 
 
@@ -271,6 +271,8 @@ def main() -> None:
 
     # [INITIAL STEP] Load data and only keep columns we want to analyze.
     df = load_dataset('MA_Public_Schools_2017.csv')
+    print(df.isnull().sum())
+    print(df.shape)
     keep_cols = [
         'PK_Enrollment', 'K_Enrollment',
         '1_Enrollment', '2_Enrollment', '3_Enrollment',
@@ -304,31 +306,26 @@ def main() -> None:
                   'District_Accountability and Assistance Level']
     df = dummy_transformation(df, dummy_cols, left_suffix='_School',
                               right_suffix='_District')
-    
+
     # [INFORMATIVE STEP] Evaluate Nan values and remove empty columns.
     too_empty = ['# in Cohort',
-        '% Graduated', '% Still in School', '% Non-Grad Completers',
-        '% GED', '% Dropped Out', '% Permanently Excluded',
-        'High School Graduates (#)', 'Attending Coll./Univ. (#)',
-        '% Attending College', '% Private Two-Year',
-        '% Private Four-Year', '% Public Two-Year',
-        '% Public Four-Year', '% MA Community College',
-        '% MA State University', '% UMass'
-    ]
-    
+                 '% Graduated', '% Still in School', '% Non-Grad Completers',
+                 '% GED', '% Dropped Out', '% Permanently Excluded',
+                 'High School Graduates (#)', 'Attending Coll./Univ. (#)',
+                 '% Attending College', '% Private Two-Year',
+                 '% Private Four-Year', '% Public Two-Year',
+                 '% Public Four-Year', '% MA Community College',
+                 '% MA State University', '% UMass'
+                 ]
+
     keep_cols = [col for col in keep_cols if col not in too_empty]
 
     # [TRANSFORMATIVE STEP] Fill empty values with mean.
     df_cols = list(df.columns)
     for col in df_cols:
         df[col].fillna(df[col].mean(), inplace=True)
-    
+
     df.to_csv('cleaned_data.csv', index=False)
-    
-    
-    # print(df.head())
-    # print(df.columns)
-    # print(df.shape)
 
 
 if __name__ == "__main__":
