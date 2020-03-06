@@ -30,7 +30,7 @@ import seaborn as sn
 
 
 pd.set_option('display.max_columns', None)
-pd.set_option('display.max_rows', 5)
+pd.set_option('display.max_rows', 100)
 pd.set_option('display.width', 100)
 
 
@@ -272,17 +272,16 @@ def main() -> None:
     # [INITIAL STEP] Load data and only keep columns we want to analyze.
     df = load_dataset('MA_Public_Schools_2017.csv')
     keep_cols = [
-        'Grade', 'PK_Enrollment', 'K_Enrollment',
+        'PK_Enrollment', 'K_Enrollment',
         '1_Enrollment', '2_Enrollment', '3_Enrollment',
         '4_Enrollment', '5_Enrollment', '6_Enrollment',
         '7_Enrollment', '8_Enrollment', '9_Enrollment',
         '10_Enrollment', '11_Enrollment', '12_Enrollment',
         'SP_Enrollment', 'TOTAL_Enrollment',
-        'First Language Not English', '% First Language Not English',
-        'English Language Learner', '% English Language Learner',
-        'Students With Disabilities', '% Students With Disabilities',
-        'High Needs', '% High Needs', 'Economically Disadvantaged',
-        '% Economically Disadvantaged', '% African American',
+        '% First Language Not English',
+        '% English Language Learner',
+        '% Students With Disabilities',
+        '% High Needs', '% Economically Disadvantaged', '% African American',
         '% Asian', '% Hispanic', '% White', '% Native American',
         '% Native Hawaiian, Pacific Islander', '% Multi-Race, Non-Hispanic',
         '% Males', '% Females', 'Total # of Classes',
@@ -291,14 +290,7 @@ def main() -> None:
         'Total In-district FTEs',
         'Average In-District Expenditures per Pupil',
         'Total Expenditures', 'Total Pupil FTEs',
-        'Average Expenditures per Pupil', '# in Cohort',
-        '% Graduated', '% Still in School', '% Non-Grad Completers',
-        '% GED', '% Dropped Out', '% Permanently Excluded',
-        'High School Graduates (#)', 'Attending Coll./Univ. (#)',
-        '% Attending College', '% Private Two-Year',
-        '% Private Four-Year', '% Public Two-Year',
-        '% Public Four-Year', '% MA Community College',
-        '% MA State University', '% UMass',
+        'Average Expenditures per Pupil',
         'Accountability and Assistance Level',
         'School Accountability Percentile (1-99)',
         'Progress and Performance Index (PPI) - All Students',
@@ -307,30 +299,36 @@ def main() -> None:
     ]
     df = df[keep_cols]
 
-    # [TRANSFORMATIVE STEP] Clean grade column to make values uniform.
-    df['Grade'].replace('4', '04', inplace=True)
-    df['Grade'].replace('6', '06', inplace=True)
-
-    # [TRANSFORMATIVE STEP] Create dummy columns for grade column.
-    grades = string_to_unique_list(df['Grade'])
-    dum_grades = string_to_dummy_dataframe(df, 'Grade', grades)
-    df = df.join(dum_grades)
-    df.drop(columns='Grade', inplace=True)
-
     # [TRANSFORMATIVE STEP] Create dummy columns for columns that need it.
     dummy_cols = ['Accountability and Assistance Level',
                   'District_Accountability and Assistance Level']
     df = dummy_transformation(df, dummy_cols, left_suffix='_School',
                               right_suffix='_District')
     
-    # df = standardize_data(df)
+    # [INFORMATIVE STEP] Evaluate Nan values and remove empty columns.
+    too_empty = ['# in Cohort',
+        '% Graduated', '% Still in School', '% Non-Grad Completers',
+        '% GED', '% Dropped Out', '% Permanently Excluded',
+        'High School Graduates (#)', 'Attending Coll./Univ. (#)',
+        '% Attending College', '% Private Two-Year',
+        '% Private Four-Year', '% Public Two-Year',
+        '% Public Four-Year', '% MA Community College',
+        '% MA State University', '% UMass'
+    ]
+    
+    keep_cols = [col for col in keep_cols if col not in too_empty]
+
+    # [TRANSFORMATIVE STEP] Fill empty values with mean.
+    df_cols = list(df.columns)
+    for col in df_cols:
+        df[col].fillna(df[col].mean(), inplace=True)
     
     df.to_csv('cleaned_data.csv', index=False)
     
     
-    print(df.head())
-    print(df.columns)
-    print(df.shape)
+    # print(df.head())
+    # print(df.columns)
+    # print(df.shape)
 
 
 if __name__ == "__main__":
