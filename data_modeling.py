@@ -84,7 +84,7 @@ def hyperparameter_tuning(X_train, y_train):
 def main() -> None:
     X_train, X_test, y_train, y_test = import_train_test('cleaned_data.csv',
                                                          'Average Expenditures'
-                                                         'per Pupil',
+                                                         ' per Pupil',
                                                          train_size=0.50)
 
     model = build_model()
